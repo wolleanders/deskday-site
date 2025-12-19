@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Deskday – Minimal Scheduling App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #050505;
+      --bg-soft: #111111;
+      --accent: #ffeb3b;
+      --accent-text: #000000;
+      --text-main: #f5f5f5;
+      --text-muted: #cccccc;
+      --divider: rgba(255,255,255,0.1);
+      --card-bg: #151515;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                  Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top, #303015 0, #050505 45%, #000 100%);
+      color: var(--text-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #111, #333);
+      border: 1px solid rgba(255,255,255,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: var(--accent);
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+    }
+
+    .logo-text span:last-child {
+      color: var(--text-main);
+      letter-spacing: 0.05em;
+    }
+
+    .btn-accent {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--accent-text);
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: lowercase;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      transition: transform 0.12s ease, box-shadow 0.12s ease,
+                  background 0.12s ease;
+    }
+
+    .btn-accent:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.7);
+      background: #ffe400;
+    }
+
+    .btn-accent:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+    }
+
+    /* HERO */
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 40px;
+      align-items: center;
+      padding: 32px 0 56px;
+      border-top: 1px solid var(--divider);
+      border-bottom: 1px solid var(--divider);
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hero-left h1 {
+      font-size: clamp(42px, 6vw, 64px);
+      letter-spacing: 0.06em;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    .hero-tagline {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 20px;
+      margin-bottom: 24px;
+    }
+
+    .hero-tagline span {
+      display: inline-block;
+    }
+
+    .hero-divider {
+      height: 1px;
+      background: var(--divider);
+      margin: 18px 0;
+    }
+
+    .hero-copy {
+      max-width: 380px;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .hero-copy p + p {
+      margin-top: 8px;
+    }
+
+    .hero-download {
+      margin-top: 24px;
+    }
+
+    .hero-download-label {
+      font-size: 14px;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    .hero-version {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .hero-right {
+      display: flex;
+      justify-content: center;
+    }
+
+    .hero-preview {
+      width: 100%;
+      max-width: 420px;
+      aspect-ratio: 3/4;
+      border-radius: 16px;
+      background: radial-gradient(circle at top, #242424 0, #050505 55%);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.9),
+        0 0 35px rgba(255,255,0,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Platzhalter für App-Screenshot – später durch <img> ersetzen */
+    .hero-preview::before {
+      content: "Deskday UI Preview";
+      position: absolute;
+      inset: 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        linear-gradient(180deg, #111 0, #050505 40%, #000 100%);
+      color: rgba(255,255,255,0.25);
+      font-size: 12px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 16px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    /* SECTION: FEATURES */
+
+    .section {
+      padding: 40px 0 10px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .section-title {
+      font-size: 22px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feature-card {
+      background: linear-gradient(145deg, #181818, #101010);
+      border-radius: 16px;
+      padding: 18px 18px 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+    }
+
+    .feature-image {
+      height: 150px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top, #2b2b2b 0, #050505 55%);
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Platzhalter-Text im Bildbereich */
+    .feature-image::after {
+      content: "Screenshot";
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .feature-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .feature-text {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* FOOTER */
+
+    footer {
+      padding: 18px 0 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Top bar -->
+    <header>
+      <div class="logo">
+        <div class="logo-mark"></div>
+        <div class="logo-text">
+          <span>beta</span>
+          <span>Deskday</span>
+        </div>
+      </div>
+
+      <!-- Top-right download button -->
+      <a href="#" class="btn-accent">download</a>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-left">
+        <h1>Deskday</h1>
+
+        <div class="hero-tagline">
+          <span>Minimal</span>
+          <span>Focused</span>
+          <span>Clean</span>
+        </div>
+
+        <div class="hero-divider"></div>
+
+        <div class="hero-copy">
+          <p>Deskday is your simple solution for a compact, minimalist scheduling tool – always on top, exactly when and where you need it.</p>
+          <p>Use cross‑platform access and optional Cloud Sync to stay on schedule, or keep everything offline if you prefer. You decide, no enforcement.</p>
+        </div>
+
+        <div class="hero-download">
+          <div class="hero-divider"></div>
+          <p class="hero-download-label">Download Beta</p>
+          <p class="hero-version">Latest Release:<br><strong>v0.9.0</strong></p>
+          <a href="#" class="btn-accent">download</a>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-preview">
+          <!-- hier kannst du später ein echtes <img> einfügen -->
+          <!-- <img src="deskday-hero.png" alt="Deskday Screenshot" /> -->
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section">
+      <h2 class="section-title">Features</h2>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <article class="feature-card">
+          <div class="feature-image">
+            <!-- später Screenshot einfügen -->
+          </div>
+          <h3 class="feature-title">Light Mode</h3>
+          <p class="feature-text">
+            Switch instantly between dark and light themes to match your workspace and focus.
+          </p>
+        </article>
+
+        <!-- Feature 2 -->
+        <article class="feature-card">
+          <div class="feature-image"></div>
+          <h3 class="feature-title">Weekly Timetable</h3>
+          <p class="feature-text">
+            Fill in your schedule for every weekday and keep your weekly plans perfectly aligned.
+          </p>
+        </article>
+
+        <!-- Feature 3 -->
+        <article class="feature-card">
+          <div class="feature-image"></div>
+          <h3 class="feature-title">Daily Notes</h3>
+          <p class="feature-text">
+            Take simple, unformatted daily notes that reset each day and are archived automatically.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <span>© 2025 Deskday</span>
+      <span>
+        <a href="#">Impressum</a> ·
+        <a href="#">Datenschutz</a>
+      </span>
+    </footer>
+  </div>
+</body>
+</html>
